@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db';
 // Routes
-// import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/userRoutes';
 // import taskRoutes from './routes/taskRoutes';
 
 // Load environment variables
@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// app.use('/api/users', userRoutes);
+app.use('/api/users', userRoutes);
 // app.use('/api/tasks', taskRoutes);
 
 // MongoDB connection
