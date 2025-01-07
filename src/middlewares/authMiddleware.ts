@@ -1,25 +1,29 @@
+// src/middleware/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import User from '../models/userModel';
 
-// Define a custom property 'user' on the Request type
-interface CustomRequest extends Request {
-  user: any;
-}
-
-// Auth middleware to check if the user is authenticated
-export const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('x-auth-token');
 
   if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
+    res.status(401).json({ msg: 'No token, authorization denied' });
+    return next(); // Continue the middleware chain
   }
 
   try {
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    req.user = decoded; // Attach user info to the request object
+    const decoded = jwt.verify(token, 'your_jwt_secret') as { userId: string }; // Type the decoded token
+    const user = await User.findById(decoded.userId); // Find user based on decoded token
+
+    if (!user) {
+      res.status(404).json({ msg: 'User not found' });
+      return;
+    }
+
+    req.user = user; // Attach the user to the request object
     next();
   } catch (err) {
+    console.error(err);
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
