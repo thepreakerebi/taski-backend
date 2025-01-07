@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import { Roles } from '../constants/roleConstants'; // Import roles
 
 // Define User interface to use with TypeScript
 export interface IUser extends Document {
@@ -6,7 +7,7 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
-  role: string; // We’ll define the role field later
+  role: string; // Role field can be 'Admin', 'Manager', 'User'
 }
 
 // Define User Schema
@@ -30,7 +31,8 @@ const userSchema = new Schema<IUser>({
   },
   role: {
     type: String,
-    default: 'User', // Default role
+    enum: [Roles.ADMIN, Roles.MANAGER, Roles.USER], // Restrict roles
+    default: Roles.USER, // Default role
   },
 },
 {
